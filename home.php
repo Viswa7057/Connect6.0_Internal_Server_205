@@ -15,9 +15,8 @@ if ($loggedInuserName == '' && $loggedInPassword == '') {
 
 require_once("db_connect.php");
 
-
-$stmt_select="SELECT * from campaign where campaign_name='$campaign'";
-	      $rslt_rs= mysqli_query($conn,$stmt_select);
+$stmt_select="SELECT * from campaign where campaign_id='$campaign'";
+$rslt_rs= mysqli_query($conn,$stmt_select);
 
 			   if(mysqli_num_rows($rslt_rs)>=1){
 			   while($row = mysqli_fetch_assoc($rslt_rs)) {
@@ -26,7 +25,6 @@ $stmt_select="SELECT * from campaign where campaign_name='$campaign'";
                   $user_group = $row["user_group"];
 			   }
 		   }
-/*
 if($user_group=='Smartcoin Sales')
 {
 $wrapup_sec = 0;
@@ -36,7 +34,6 @@ $cam_rows = mysqli_fetch_assoc($cam_rslt);
 $wrapup_sec = $cam_rows['wrapup_sec'];
 $wrapup_sec = $wrapup_sec."000";
 }
-*/
 
 $stmt_select_fe="SELECT * from features_settings";
 	      $rslt_res= mysqli_query($conn,$stmt_select_fe);
@@ -144,37 +141,6 @@ function Auto_Hangup_Wrapup() {
 
 
 	<style>
-	
-	/* WEBRTC POPUP */	
-	.content {
-      position: fixed; /* Ensure it's above all other content */
-      top: 65%;
-      left: 85%;
-      transform: translate(-50%, -50%);
-      max-height: 0;
-      overflow: hidden;
-      background-color: #1A2B6D;
-      border-radius: 5px;
-      transition: max-height 0.5s ease, padding 0.5s ease;
-      z-index: 1000; /* Ensure it's above other elements */
-      width: 340px;
-      padding: 0;
-    }
-
-    .content.visible {
-      max-height: 400px;
-	  width: 340px;
-      padding: 10px;
-    }
-
-    .hidden {
-      max-height: 0;
-	  width: 340px;
-      padding: 0;
-    }
-/* WEBRTC POPUP */	
-
-
 		.header {
 			padding: 6px;
 			// text-align: center;
@@ -627,25 +593,8 @@ function Auto_Hangup_Wrapup() {
 
 	<div class="header" id="mainheader">
 		<div><img src="./assets/img/haloo_new.png" width="100px" height="45px">&nbsp;&nbsp;<b></b>
-            
-			<span style="float:right;margin-right: 420px;background-color: #ffff;color: #060606;padding: 9px;border-radius: 5px;font-weight: 600;height:48px;">
-			<select class="form-control" name ="update_campaign" id ="update_campaign" onchange="campaignChange()" style="margin:-4px;">
-						<option value="">Select Campaign &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>
-						
-						<?php			
-				$stmt_select="SELECT * from campaign where user_group='$user_group'";
-	                  $rslt_rs= mysqli_query($conn,$stmt_select);
-	                 
-					 $x = 1;		
-			   while($row = mysqli_fetch_assoc($rslt_rs)) {
-								 ?>
-								
-									<option value = "<?php echo $row["campaign_name"]; ?>" ><?php echo $row["campaign_name"]; ?></option> 
-							 <?php } ?>
-					  </select>
-			</span>
-			
-			<span style="float:right;margin-right: -370px;background-color: #ffff;color: #060606;padding: 9px;border-radius: 5px;font-weight: 600;">
+
+			<span style="float:right;margin-right: 220px;background-color: #ffff;color: #060606;padding: 9px;border-radius: 5px;font-weight: 600;">
 			<span id="agentStatus"></span>
 			<span id="check_display" style="display:none;">
 				<label class="switch1">
@@ -655,7 +604,7 @@ function Auto_Hangup_Wrapup() {
 				</span>
 
 			</span>
-			<span style="float:right;margin-right: -550px;background-color: #04AA6D;color: #060606;padding: 9px;border-radius: 5px;font-weight: 600;">
+			<span style="float:right;margin-right: -270px;background-color: #04AA6D;color: #060606;padding: 9px;border-radius: 5px;font-weight: 600;">
 				<div class="dropdown">
 					<button class="dropbtn">
 						<i class="fa fa-user" aria-hidden="true"></i>
@@ -738,7 +687,7 @@ function Auto_Hangup_Wrapup() {
 						<div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
 							<i class="fa fa-headphones-alt" aria-hidden="true" style="color:#1A2B6D;font-size:15px"></i>
 						</div>
-						<span style="font-size:10px !important" class="nav-link-text1 ms1-1">ACTIVE LEADS</span>&nbsp;&nbsp;<span id="ActiveLeadCount" style="color:#F8F8FF;font-size:12px;background-color:#228B22;border:1px solid white;border-radius:5px;width:11px;height:18px; text-align: center;">0</span>
+						<span style="font-size:10px !important" class="nav-link-text1 ms1-1">ACTIVE LEADS</span>&nbsp;&nbsp;<span id="ActiveLeadCount" style="color:#F8F8FF;font-size:12px;background-color:#228B22;border:1px solid white;border-radius:5px;width:20px;height:18px; text-align: center;">0</span>
 					</a>
 				</li>
 				<?php
@@ -795,15 +744,22 @@ function Auto_Hangup_Wrapup() {
 					<span style="color:#000033" ><i class="fa fa-clock-o" aria-hidden="true"></i> Login Hours</span><br><span style="color:#000033;" id="Lhour">00:00:00</span></span>
 				<span class="btn btn-success" style="background-color:#F0F0F0;border-radius: 10px;width:118px;height:65px;font-weight:600;padding:15px;">
 
+<?php if($user_group=='Smartcoin Sales'){ ?>
+
           <span style="color:#000033" ><i class="fa fa-clock-o" aria-hidden="true"></i>Talktime</span><br><span style="color:#000033;" id="TotalTalk">00:00:00</span></span>
         <span class="btn btn-success" style="background-color:#F0F0F0;border-radius: 10px;width:118px;height:65px;font-weight:600;padding:15px;">
 
-			<span style="color:#000033" ><span style="color:#000033;" id="camps"></span></span><br>
+<?php } ?>
+					<span style="color:#000033" ><i class="fa fa-headphones" aria-hidden="true"></i> <?php echo $campaign; ?></span><br>
 					<span style="color:#000033;"><i class="fa fa-mobile" aria-hidden="true"></i> <?php echo $extension; ?></span></span>&nbsp;&nbsp;
 
 					<span class="btn btn-warning btn-space" id="StatusCall" style="background-color:#F0F0F0;border-radius: 10px;color:red;font-weight:600;width:118px;height:65px;font-size:14px;padding:20px;">
 						<span id="liveCallNotification" style="font-size: 18px;"><i class="fa fa-volume-control-phone" aria-hidden="true"></i></span>
 						&nbsp;<b><span id="CallStatus">IDLE</span></b></span>&nbsp;&nbsp;
+						
+						<span class="btn btn-warning btn-space" id="DialStatus" style="background-color:#F0F0F0;border-radius: 10px;color:#018f48;font-weight:600;width:118px;height:65px;font-size:14px;padding:20px;">
+						<span id="liveCallNotification" style="font-size: 18px;"><i class="fa fa-phone" aria-hidden="true"></i></span>
+						&nbsp;<b><span id="Dial_status"></span></b></span>&nbsp;&nbsp;
 
 						<span class="btn btn-warning btn-space" id="webform" style="background-color:#F0F0F0;border-radius: 10px;color:green;font-weight:600;width:118px;height:65px;font-size:14px;">
 						<span id="webformNotification" style="font-size: 18px;color:#000033;"><i class="fa fa-wpforms" aria-hidden="true"></i></span>
@@ -827,6 +783,11 @@ function Auto_Hangup_Wrapup() {
 						<div id="cust_hang" style="display:none;">
 <h6 style="margin-top: 7px;font-weight:600;border-radius:10px;color: red;"><b style="color:red;">Call Hangup From Customer....</b></h6>
 						</div>
+						
+						<div id="preview_call" style="display:none;">	
+		<h6 style="margin-left:70px;margin-top: 7px;font-weight:400;border-radius:10px;color: red;"><b style="color:red;">Call dials in <span id="timer">9</span>sec...</b></h6>
+					</div>
+					
 					</div>
 				</nav>
 				<div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
@@ -903,13 +864,9 @@ function Auto_Hangup_Wrapup() {
 						<?php
 					 }
 						?>
-						<span class="btn btn-success" id="hang_up" style="background-color:#ffff;border-radius: 10px;color:red;width:56px;font-weight:600;font-size:13px;" onclick="callHangupFun('Answered','<?php echo $loggedInuserName; ?>')">
+						<span class="btn btn-success" id="hang_up" style="background-color:#ffff;border-radius: 10px;color:red;width:56px;font-weight:600;font-size:13px;" onclick="callHangupFun('answered','<?php echo $loggedInuserName; ?>')">
 						<i class="fa fa-phone-square" aria-hidden="true" style="font-size: 25px;"></i>
 						<br><span id="goLiveName">Hangup</span></span>&nbsp;&nbsp;
-						
-					    <span class="btn btn-success" id="toggleButton" style="background-color:#ffff;border-radius: 10px;color:#1A2B6D;width:56px;font-weight:600;font-size:13px;">
-						<i class="fa fa-headphones" aria-hidden="true" style="font-size: 25px;"></i>
-						<br><span id="goLiveName">WEBRTC</span></span>&nbsp;&nbsp;
 
 
 				</div>
@@ -950,23 +907,28 @@ function Auto_Hangup_Wrapup() {
 				<span id="pausecode" style="margin-left: 300px;color:red;"></span>
 			</div>
 
-<div id="toggleContent" class="content hidden"><br>
-  <iframe 
-    src="https://haloocom.shriramlife.me/testphone/Phone/?agent=<?php echo $extension; ?>" 
-    width="320" 
-    height="300" 
-    frameborder="0" 
-    allowfullscreen>
-</iframe>
-  </div>
-  
 			<div class="row mt-4">
 				<div class="col-lg-15 mb-lg-0 mb-4" id="fielddData" style="display:none;">
 
 				<div class="card z-index-2 h-100" style="padding: 20px;width:100%; border-radius:5px;">
 						<table>
 						<tr>
-						<div class="form-group" style="text-align: center; font-weight: bold;"> CUSTOMER INFORMATION</div>
+						<td>
+						<span class="btn btn-warning btn-space" id="skip_span" style="background-color:#ffff;border-radius: 10px;color:#1A2B6D;font-weight:190;font-size:14px;width: 110px;color:red;display:none;" onclick="skip();">
+						<i class="fa fa-forward" aria-hidden="true" style="font-size: 14px;"></i>&nbsp;&nbsp;
+						<span id="emailName" style="font-weight:bold;"><b>Skip</b></span></span>
+						</td>
+						
+						<td>
+						<div class="form-group" style="text-align: center; font-weight: bold;">CUSTOMER INFORMATION</div>
+						</td>
+						<td>
+						</td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<td>
+						<span class="btn btn-warning btn-space" id="dial_span" style="background-color:#ffff;border-radius: 10px;color:#1A2B6D;font-weight:190;font-size:14px;width: 110px;color:#018f48;display:none;" onclick="pdial();">
+						<i class="fa fa-phone" aria-hidden="true" style="font-size: 14px;"></i>&nbsp;&nbsp;
+						<span id="emailName" style="font-weight:bold;"><b>Dial</b></span></span>
+						</td>
 						</tr>
 						</table>
 							<form method='POST'>
@@ -1550,7 +1512,7 @@ function Auto_Hangup_Wrapup() {
 
 										<div class="form-group" style="display: inline-block;width: 18%;vertical-align: top;margin-right:7px;">
 											<label for="field2"><?php echo $row["label_field5"]; ?></label>
-											<input type="text" class="form-control" id="label_field5" name="label_field5">
+											<input type="datetime-local" class="form-control" id="label_field5" name="label_field5">
 										</div>
 
 									<?php
@@ -1558,7 +1520,7 @@ function Auto_Hangup_Wrapup() {
 					   ?>
 					   <div class="form-group"style="display:none;">
 
-											<input type="text" class="form-control" id="label_field5" name="label_field5">
+											<input type="datetime-local" class="form-control" id="label_field5" name="label_field5">
 										</div>
 					<?php
 				   }
@@ -3568,13 +3530,6 @@ function Auto_Hangup_Wrapup() {
         document.getElementById("datePicker").value = formattedDate;
     </script>
 <script>
-
-document.getElementById("toggleButton").addEventListener("click", function() {
-  var content = document.getElementById("toggleContent");
-  content.classList.toggle("visible");
-  content.classList.toggle("hidden");
-});
-
 function userclick(){
 	var user = '<?php echo $loggedInuserName; ?>';
 	var user_name = document.getElementById('user_name').value;
@@ -3701,7 +3656,7 @@ return true;
 
 	function transferAgent(){
 		var user = '<?php echo $extension; ?>';
-		var campaign = document.getElementById("update_campaign").value;
+		var campaign = '<?php echo $campaign; ?>';
 
 		var next_agent = document.getElementById('transferDIV').value;
 		var blind = 'yes';
@@ -3724,7 +3679,7 @@ return true;
 
 	function conferenceAgent(){
 		var user = '<?php echo $extension; ?>';
-		var campaign = document.getElementById("update_campaign").value;
+		var campaign = '<?php echo $campaign; ?>';
 
 		var next_agent = document.getElementById('transferDIV').value;
 		var blind = 'no';
@@ -3750,7 +3705,7 @@ return true;
 		const mobileTransferNumber = document.getElementById("transfer_number").value;
         const pattern = /^\d+$/;
 		if (pattern.test(mobileTransferNumber)) {
-		var campaign = document.getElementById("update_campaign").value;
+		var campaign = '<?php echo $campaign; ?>';
 
 		var user = '<?php echo $extension; ?>';
 		var transfer_number = document.getElementById('transfer_number').value;
@@ -3784,7 +3739,7 @@ function blindtransferAgent(){
 		const mobileTransferNumber = document.getElementById("transfer_number").value;
         const pattern = /^\d+$/;
 		if (pattern.test(mobileTransferNumber)) {
-		var campaign = document.getElementById("update_campaign").value;
+		var campaign = '<?php echo $campaign; ?>';
 
 		var user = '<?php echo $extension; ?>';
 		var transfer_number = document.getElementById('transfer_number').value;
@@ -4199,7 +4154,7 @@ function breakpop1(){
 	function InternalChatWithAgentSend() {
 
 		var user = '<?php echo $loggedInuserName; ?>';
-		var campaignlog = document.getElementById("update_campaign").value;
+		var campaignlog = '<?php echo $campaign; ?>';
 		//alert(campaignlog);
 		var agent_Name = document.getElementById('AgentNameToChat').value;
 		var InternalChatContent = document.getElementById('InternalChatWithAgentSend').value;
@@ -4245,16 +4200,20 @@ function breakpop1(){
 	function AgentStatusChecking(){
 
 		var status = document.getElementById('CallStatus').textContent;
+		var Dial_status = document.getElementById('Dial_status').textContent;
 
 		if(status == "IDLE" || status == "BREAK" || status == "DIAL" || status == "Manual" || status == "ONCALL" || status == "WRAPUP"){
 
 		if (document.getElementById('AgentStatusChecking').checked) {
+			if(Dial_status == "Preview"){
+			preview();
+			}
 			document.getElementById('fielddData').style.display = 'block';
 		    document.getElementById('InActiveStatus').style.display = 'none';
 			document.getElementById('pausebreak').style.display = 'none';
 
 			var user = '<?php echo $loggedInuserName; ?>';
-            var campaign = document.getElementById("update_campaign").value;
+            var campaign = '<?php echo $campaign; ?>';
 
 
 			$.ajax({
@@ -4286,7 +4245,7 @@ function breakpop1(){
 			document.getElementById('fielddData').style.display = 'none';
 
 			var user = '<?php echo $loggedInuserName; ?>';
-			var campaign = document.getElementById("update_campaign").value;
+			var campaign = '<?php echo $campaign; ?>';
 
 
 			$.ajax({
@@ -4304,7 +4263,7 @@ function breakpop1(){
 				}else {
 					//alert("pause");
 			var user = '<?php echo $loggedInuserName; ?>';
-			var campaign = document.getElementById("update_campaign").value;
+			var campaign = '<?php echo $campaign; ?>';
 
 					$.ajax({
 				type: 'POST',
@@ -4345,7 +4304,7 @@ function breakpop1(){
 		document.getElementById('pausebreak').style.display = 'block';
 		}
 			var user = '<?php echo $loggedInuserName; ?>';
-			var campaign = document.getElementById("update_campaign").value;
+			var campaign = '<?php echo $campaign; ?>';
 
 			$.ajax({
 				type: 'POST',
@@ -4366,7 +4325,7 @@ function breakpop1(){
 	function allCallCount() {
 		var user = '<?php echo $loggedInuserName; ?>';
 		var extension = '<?php echo $extension; ?>';
-		var campaign = document.getElementById("update_campaign").value;
+		var campaign = '<?php echo $campaign; ?>';
 
 		//alert(extension);
 
@@ -4425,13 +4384,14 @@ function breakpop1(){
 function CallBackCount(){
 		var user = '<?php echo $loggedInuserName; ?>';
 		var extension = '<?php echo $extension; ?>';
-		//alert(extension);
+		var campaign = '<?php echo $campaign; ?>';
 
 		$.ajax({
 			type: 'POST',
 			url: "ajax/CallBackCount.php",
 			data: {
 				'user': user,
+				'campaign': campaign,
 				'extension': extension
 			},
 			success: function(result) {
@@ -4450,7 +4410,7 @@ function CallBackCount(){
 
 	function CallTransferCount(){
 		var user = '<?php echo $loggedInuserName; ?>';
-		var campaign = document.getElementById("update_campaign").value;
+		var campaign = '<?php echo $campaign; ?>';
 		//alert(extension);
 
 		$.ajax({
@@ -4473,7 +4433,7 @@ function CallBackCount(){
 
 	function ChatRefreshCount(){
 		var user = '<?php echo $loggedInuserName; ?>';
-		var campaign = document.getElementById("update_campaign").value;
+		var campaign = '<?php echo $campaign; ?>';
 		//alert(extension);
 
 		$.ajax({
@@ -5337,7 +5297,7 @@ function queueCallInfo() {
 	function AgentStatus() {
 		var user = '<?php echo $loggedInuserName; ?>';
 		var extension  = '<?php echo $extension; ?>';
-		var campaign = document.getElementById("update_campaign").value;
+		var campaign = '<?php echo $campaign; ?>';
 		//alert(extension);
 		$.ajax({
 			type: 'POST',
@@ -5418,7 +5378,7 @@ function queueCallInfo() {
 
 function activeLeadsCount() {
 		var user = '<?php echo $loggedInuserName; ?>';
-		var campaign = document.getElementById("update_campaign").value;
+		var campaign = '<?php echo $campaign; ?>';
 		//alert(campaign);
 		$.ajax({
 			type: 'POST',
@@ -5441,7 +5401,7 @@ setInterval(function() { activeLeadsCount() }, 1000);
 
 	function announcementCount() {
 		var user = '<?php echo $loggedInuserName; ?>';
-		var campaign = document.getElementById("update_campaign").value;
+		var campaign = '<?php echo $campaign; ?>';
 		//alert(user);
 		$.ajax({
 			type: 'POST',
@@ -5497,11 +5457,21 @@ setInterval(function() { activeLeadsCount() }, 1000);
 			},
 			success: function(result) {
 				//console.log(result);
-			//alert(result);
+			//alert(status[2]);
 				var status = result.split('=====');
-				if ((status[0] == 'ONCALL' || status[0] == 'WRAPUP') && status[1] == '0') {
+				document.getElementById('Dial_status').innerHTML = status[2];
+				if(status[2] == 'Preview'){
+					document.getElementById('skip_span').style.display = 'block';
+					document.getElementById('dial_span').style.display = 'block';
+					//document.getElementById('preview_call').style.display = 'block';
+				}else{
+					document.getElementById('skip_span').style.display = 'none';
+					document.getElementById('dial_span').style.display = 'none';
+					document.getElementById('preview_call').style.display = 'none';
+				}
+				if ((status[0] == 'ONCALL' || status[0] == 'WRAPUP') && status[1] == '0' && status[2] != 'Preview') {
 					//var audio = new Audio('Anouncement.mp3');
-                         //audio.play();
+                         		//audio.play();
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
@@ -5588,6 +5558,7 @@ document.getElementById('user_field5').value = data[64];
 
 				if(status[0] =="ONCALL" || status[0] =="DIAL"){
 					document.getElementById('check_display').style.display = 'none';
+					document.getElementById('preview_call').style.display = 'none';
 					document.getElementById('cust_hang').style.display = 'none';
 				document.getElementById("StatusCall").style.backgroundColor = "#29a329";
 				document.getElementById("liveCallNotification").style.color = "#ffffff";
@@ -5597,7 +5568,6 @@ document.getElementById('user_field5').value = data[64];
 				document.getElementById("hang_up").style.color = "#ffffff";
 				//allCallCount();
 				}else if(status[0] =="WRAPUP"){
-					/*
           if(user_group=="Smartcoin Group")
           {
             Auto_Voicefile_Play();
@@ -5606,8 +5576,8 @@ document.getElementById('user_field5').value = data[64];
           {
             Auto_Hangup_Wrapup();
           }
-					 */
 					document.getElementById('check_display').style.display = 'none';
+					document.getElementById('preview_call').style.display = 'none';
 					document.getElementById('cust_hang').style.display = 'block';
 					document.getElementById("StatusCall").style.backgroundColor = "#e6e600";
 					document.getElementById("liveCallNotification").style.color = "black";
@@ -5625,7 +5595,8 @@ document.getElementById('user_field5').value = data[64];
 
 				document.getElementById("hang_up").style.backgroundColor = "#ffff";
 				document.getElementById("hang_up").style.color = "red";
-document.getElementById('first_name').value='';
+				
+/*document.getElementById('first_name').value='';
 document.getElementById('middle_name').value='';
 document.getElementById('last_name').value='';
 document.getElementById('address1').value='';
@@ -5710,11 +5681,10 @@ document.getElementById("sub_sub_drop_down1_value").value="";
 document.getElementById("sub_sub_drop_down2_value").value="";
 document.getElementById("sub_sub_drop_down3_value").value="";
 document.getElementById("sub_sub_drop_down4_value").value="";
-document.getElementById("sub_sub_drop_down5_value").value="";
+document.getElementById("sub_sub_drop_down5_value").value=""; */
 				}
 
 				document.getElementById('CallStatus').innerHTML = status[0];
-				document.getElementById('camps').innerHTML = status[2];
 			}
 		});
 	}
@@ -5729,56 +5699,105 @@ function callbackclose() {
 
 
 	function callHangupFun(Disposition, LoginUser) {
-			//alert(Disposition);
-		var status = document.getElementById('CallStatus').textContent;
+				//alert(Disposition);
 		var user_group = '<?php echo $user_group; ?>';
-		var extension = '<?php echo $extension; ?>';
-		var campaign = document.getElementById("update_campaign").value;
-		var drop_down1_value = document.getElementById('drop_down1_value').value;
-		var sub_drop_down1_value = document.getElementById('sub_drop_down1_value').value;
-		var sub_sub_drop_down1_value = document.getElementById('sub_drop_down1_value').value;
-		if(drop_down1_value==""){
-				 alert('Please Select The Disposition Before Dispose The Call.');
-	          		return true;
+				//calling postcall api if usergroup is collection //
+		if(user_group == "Smartcoin Group"){
+		     postcallApi_datafetch();
 		}
-                if(sub_drop_down1_value==""){
-                                 alert('Please Select The Sub Disposition Before Dispose The Call.');
-                                return true;
-                }
-                if(sub_sub_drop_down1_value==""){
-                                 alert('Please Select The Sub Sub Disposition Before Dispose The Call.');
-                                return true;
-                }
+		var status = document.getElementById('CallStatus').textContent;
+		var disposition = document.getElementById('dropdown2_list').value;
+
+		var extension = '<?php echo $extension; ?>';
+		var campaign = '<?php echo $campaign; ?>';
+		var dropdown1_list = document.getElementById('dropdown1_list').value;
+		var dropdown2_list = document.getElementById('dropdown2_list').value;
 		//alert(status);
 		if(status == "DIAL" || status =="ONCALL" || status =="WRAPUP"){
-
+		
 				$.ajax({
 			type: 'POST',
 			url: "ajax/dispo_hang.php",
 			data: {
 				'extension': extension,
 				'campaign' : campaign,
-				'dropdown1_list' : drop_down1_value,
-				'drop_down1_value' : drop_down1_value,
-				'sub_drop_down1_value' : sub_drop_down1_value,
-				'sub_sub_drop_down1_value' : sub_sub_drop_down1_value
+				'dropdown1_list' : dropdown1_list,
+		                'dropdown2_list' : dropdown2_list
 			},
 			success: function(result) {
-        			console.log(result);
+		        //console.log(result);
+		        //console.log(result);
 
 			}
 		});
-		document.getElementById('dispoPop').style.display = "block";
+				document.getElementById('dispoPop').style.display = "block";
+			
 		}
-		dispoFun(Disposition, LoginUser);
 	}
 
 
 
+function postcallApi_datafetch() {
+    //alert('inside post call');
+    var user_group = '<?php echo $user_group; ?>';
+    var user = '<?php echo isset($loggedInuserName) ? $loggedInuserName : ""; ?>';
+    var extension = '<?php echo isset($extension) ? $extension : ""; ?>';
+    var campaign = '<?php echo isset($campaign) ? $campaign : ""; ?>';
+    var phoneNumber = document.getElementById('label_phone_number') ? document.getElementById('label_phone_number').value : '';
+    var address1 = document.getElementById('address1') ? document.getElementById('address1').value : '';
+    var comments = document.getElementById('comments') ? document.getElementById('comments').value : '';
+    var dropdown2_list = document.getElementById('dropdown2_list') ? document.getElementById('dropdown2_list').value : '';
+
+	if(dropdown2_list =="PTP_Today" || dropdown2_list =="PTP_Tomorrow" || dropdown2_list =="Future_PTP" || dropdown2_list =="BR_PTP"){
+		var ptpdate = document.getElementById('label_field5') ? document.getElementById('label_field5').value : '';
+	}else{
+		var ptpdate = '0000-00-00 00:00:00';
+	}
+	//alert(user+extension+campaign+phoneNumber+address1+comments+dropdown2_list);
+
+    if (typeof jQuery == 'undefined') {
+        alert("Error: jQuery is not loaded!");
+        return;
+    }
+
+    $.ajax({
+        type: 'POST',
+        url: "ajax/postCall_ApiData_110325.php",
+        data: {
+            'user': user,
+            'dropdown2_list': dropdown2_list,
+            'phoneNumber': phoneNumber,
+            'extension': extension,
+            'campaign': campaign,
+            'address1': address1,
+            'comments': comments,
+			'user_group': user_group,
+			'ptpdate': ptpdate
+        },
+        success: function(result1) {
+            //alert("Response: " + result1);
+            console.log("Response: " + result1);
+        },
+        error: function(xhr, status, error) {
+            //alert("AJAX Error: " + error);
+            console.error("AJAX Error: ", xhr.responseText);
+        }
+    });
+}
+
 	function dispoFun(Disposition, LoginUser){
-		var disposition = document.getElementById('dropdown1_list').value;
+		var disposition = document.getElementById('dropdown2_list').value;
 		var user_group = '<?php echo $user_group; ?>';
 
+		var ptpdate = document.getElementById('label_field5').value;
+
+		
+		
+
+      if(user_group == "Smartcoin Sales"){
+              var audio = new Audio('call_hangup.mp3');
+              audio.play();
+      }
 
 		//alert(Disposition);
 	     updateTimer();
@@ -5795,7 +5814,7 @@ function callbackclose() {
 		var DispositionVal = Disposition;
 		var user = '<?php echo $loggedInuserName; ?>';
 		var extension = '<?php echo $extension; ?>';
-		var campaign = document.getElementById("update_campaign").value;
+		var campaign = '<?php echo $campaign; ?>';
 		var phoneNumber = document.getElementById('label_phone_number').value;
 
 var first_name = document.getElementById('first_name').value;
@@ -5879,6 +5898,22 @@ var go_pause = document.getElementById('go_pause').value;
 	var go_pause = '';
 }
 
+if((campaign == "CollectionAgency" || campaign == "CustomerRetention") && (drop_down1_value == "" && sub_drop_down1_value == "")){
+
+	alert('Please Select Disposition & Sub disposition Before Dispose The Call.');
+	return true;
+}else{
+	var drop_down1_value = document.getElementById("drop_down1_value").value;
+	var sub_drop_down1_value = document.getElementById("sub_drop_down1_value").value;
+}
+
+if(campaign == "CollectionAgency" && drop_down1_value == "PTP" && sub_drop_down1_value == "Yes" && first_name == "" && middle_name == ""){
+	alert('Please Enter PTP Amount & Total Amount Before Dispose The Call.');
+	return true;
+}else{
+	var first_name = document.getElementById('first_name').value;
+var middle_name = document.getElementById('middle_name').value;
+}
 		//alert("callback_date: "+callback_date+" callback_time: "+callback_time);
 		//alert(user_me);
 		$.ajax({
@@ -6071,7 +6106,7 @@ if(go_pause == "GOPAUSE"){
        }
 
     loginhours();
-
+preview();
 }
 
     function AutoDispose(){
@@ -6082,8 +6117,22 @@ if(go_pause == "GOPAUSE"){
 
 		var disposition = document.getElementById('dropdown2_list').value;
 		var user_group = '<?php echo $user_group; ?>';
-   
-		updateTimer();
+/*
+		if(user_group == "Smartcoin Group" || user_group == "Smartcoin Sales"){
+			if(disposition == ""){
+				 alert('Please Select The Disposition Before Dispose The Call.');
+	          return true;
+			 }
+			}
+
+    if(user_group == "Smartcoin Sales"){
+              var audio = new Audio('call_hangup.mp3');
+              audio.play();
+    }
+
+*/
+		//alert(Disposition);
+	     updateTimer();
 		 document.getElementById('holdID').style.display = "none";
 		document.getElementById('dispoPop').style.display = "none";
 		allCallCount();
@@ -6097,7 +6146,7 @@ if(go_pause == "GOPAUSE"){
 		var DispositionVal = Disposition;
 		var user = '<?php echo $loggedInuserName; ?>';
 		var extension = '<?php echo $extension; ?>';
-		var campaign = document.getElementById("update_campaign").value;
+		var campaign = '<?php echo $campaign; ?>';
 		var phoneNumber = document.getElementById('label_phone_number').value;
 
 var first_name = document.getElementById('first_name').value;
@@ -6390,7 +6439,7 @@ if(go_pause == "GOPAUSE"){
        }
 
     loginhours();
-
+preview();
 }
 
 function setCallback(){
@@ -6405,7 +6454,7 @@ updateTimer();
      var DispositionVal = "CALLBACK";
 		var user = '<?php echo $loggedInuserName; ?>';
 		var extension = '<?php echo $extension; ?>';
-		var campaign = document.getElementById("update_campaign").value;
+		var campaign = '<?php echo $campaign; ?>';
 		var phoneNumber = document.getElementById('label_phone_number').value;
 
 var first_name = document.getElementById('first_name').value;
@@ -6693,6 +6742,7 @@ if(go_pause == "GOPAUSE"){
 				AgentStatusChecking();
               }
  document.getElementById('go_pause').checked = false;
+ preview();
 	}
 
 
@@ -7100,7 +7150,7 @@ function phoneBookClick(){
 			return true;
 		}
 
-	var campaign = document.getElementById("update_campaign").value;
+	var campaign = '<?php echo $campaign; ?>';
     var valid = "click";
 		$.ajax({
 			type: 'POST',
@@ -7119,7 +7169,7 @@ function phoneBookClick(){
 }
 
 function myphoneBook(){
-	var campaign = document.getElementById("update_campaign").value;
+	var campaign = '<?php echo $campaign; ?>';
     var valid = "search";
 	var key = document.getElementById("searchPhoneBook").value;
 	//alert(key);
@@ -7283,7 +7333,7 @@ function mailToPhonebbok(val){
 
 function loginhours() {
 		var user = '<?php echo $loggedInuserName; ?>';
-		var campaign = document.getElementById("update_campaign").value;
+		var campaign = '<?php echo $campaign; ?>';
 		//alert(user);
 
 		$.ajax({
@@ -7309,26 +7359,167 @@ function loginhours() {
 
 
 
-function campaignChange() {
-		var extension = '<?php echo $extension; ?>';
-		var campaign = document.getElementById("update_campaign").value;
-		//alert(campaign);
+function preview() {
+    const Dial_status = document.querySelector('#Dial_status').textContent.trim();
+    const status = document.querySelector('#CallStatus').textContent.trim();
+    const campaign = '<?php echo $campaign; ?>';
 
-		$.ajax({
-			type: 'POST',
-			url: "ajax/dynamic_campaign.php",
-			data: {
-				'extension': extension,
-				'campaign': campaign
-			},
-			success: function(result) {
-        //console.log(result);
-			document.getElementById("update_campaign").value = campaign;
-			}
-		});
-		
-	} 
+    if ((status === "IDLE" || status === "WRAPUP") && Dial_status === "Preview") {
+        const xhttp = new XMLHttpRequest();
+
+        xhttp.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                const data = this.responseText.split("||");
+                const phoneNumber = data[10]?.trim() || '';
+
+                            const fields = [
+                                'first_name', 'middle_name', 'last_name', 'address1', 'address2', 'address3', 
+                                'label_city', 'label_state', 'label_province', 'label_gender', 'label_phone_number', 
+                                'label_phone_code', 'alt_phone1', 'alt_phone2', 'alt_phone3', 'alt_phone4', 
+                                'alt_phone5', 'alt_phone6', 'alt_phone7', 'alt_phone8', 'comments', 
+                                'label_field1', 'label_field2', 'label_field3', 'label_field4', 'label_field5', 
+                                'label_field6', 'label_field7', 'label_field8', 'label_field9', 'label_field10', 
+                                'label_field11', 'label_field12', 'label_field13', 'label_field14', 'label_field15', 
+                                'label_field16', 'label_field17', 'label_field18', 'label_field19', 'label_field20', 
+                                'label_field21', 'label_field22', 'label_field23', 'label_field24', 'label_field25', 
+                                'label_field26', 'label_field27', 'label_field28', 'dropdown1_list', 'dropdown2_list', 
+                                'dropdown3_list', 'dropdown4_list', 'dropdown5_list', 'dropdown6_list', 'dropdown7_list'
+                            ];
+
+                            fields.forEach((field, index) => {
+                                let element = document.getElementById(field);
+                                if (element) {
+                                    element.value = data[index]?.trim() || '';
+                                }
+                            });
+                       
+            }
+        };
+
+        xhttp.open("GET", "preview_data.php?campaign=" + encodeURIComponent(campaign), true);
+        xhttp.send();
+    }
+}
+
+/*
+// Preview Dialing Timer
+let timeLeft = 10;
+const timerElement = document.getElementById("timer");
+let countdown;
+
+function startCountdown() {
+	//alert("count");
+    clearInterval(countdown);
+    let pauseCounter = 0; // Track pause duration
+    
+    countdown = setInterval(() => {
+        const status = document.getElementById('CallStatus').textContent.trim();
+        const Dstatus = document.getElementById('Dial_status').textContent.trim();
+        const phoneNumber = document.getElementById('label_phone_number').value.trim();
+        
+        if (status === "IDLE" && Dstatus === "Preview" && phoneNumber !== "") {
+            // If we're in pause mode, just count down the pause
+            if (pauseCounter > 0) {
+                pauseCounter--;
+                timerElement.textContent = timeLeft; // Keep showing 6
+                return;
+            }
+            
+            // Normal countdown logic
+            if (timeLeft <= 0) {
+                pdial();
+                timeLeft = 10;
+                pauseCounter = 9; // Pause for 5 seconds
+                timerElement.textContent = timeLeft;
+                return;
+            }
+            
+            timerElement.textContent = timeLeft;
+            timeLeft--;
+        } else {
+            timeLeft = 10;
+            pauseCounter = 0; // Reset pause when conditions aren't met
+            timerElement.textContent = timeLeft;
+        }
+    }, 1000);
+} */
 
 
+// Skip Function
+function skip() {
+    const Dial_status = document.getElementById('Dial_status').textContent.trim();
+    const status = document.getElementById('CallStatus').textContent.trim();
+    const campaign = '<?php echo $campaign; ?>';
+    const number = document.getElementById('label_phone_number').value.trim();
+    if (status === "IDLE" && Dial_status === "Preview") {
+        const xhttp = new XMLHttpRequest();
+
+        xhttp.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                const data = this.responseText.split("||");
+                const phoneNumber = data[10]?.trim() || '';
+				
+                            const fields = [
+                                'first_name', 'middle_name', 'last_name', 'address1', 'address2', 'address3',
+                                'label_city', 'label_state', 'label_province', 'label_gender', 'label_phone_number',
+                                'label_phone_code', 'alt_phone1', 'alt_phone2', 'alt_phone3', 'alt_phone4',
+                                'alt_phone5', 'alt_phone6', 'alt_phone7', 'alt_phone8', 'comments',
+                                'label_field1', 'label_field2', 'label_field3', 'label_field4', 'label_field5',
+                                'label_field6', 'label_field7', 'label_field8', 'label_field9', 'label_field10',
+                                'label_field11', 'label_field12', 'label_field13', 'label_field14', 'label_field15',
+                                'label_field16', 'label_field17', 'label_field18', 'label_field19', 'label_field20',
+                                'label_field21', 'label_field22', 'label_field23', 'label_field24', 'label_field25',
+                                'label_field26', 'label_field27', 'label_field28', 'dropdown1_list', 'dropdown2_list',
+                                'dropdown3_list', 'dropdown4_list', 'dropdown5_list', 'dropdown6_list', 'dropdown7_list'
+                            ];
+
+                            fields.forEach((field, index) => {
+                                let element = document.getElementById(field);
+                                if (element) {
+                                    element.value = data[index]?.trim() || '';
+									//element.value = data[index]?.trim();
+                                }
+                            });
+                       
+            }
+        };
+
+        xhttp.open("GET", "skip_data.php?campaign=" + encodeURIComponent(campaign) + "&Number=" + encodeURIComponent(number), true);
+        xhttp.send();
+    }
+}
+
+
+function pdial() {
+    const user = '<?php echo addslashes($loggedInuserName); ?>';
+    const extension = '<?php echo addslashes($extension); ?>';
+    const campaign = '<?php echo addslashes($campaign); ?>';
+    const phoneNumber = document.getElementById('label_phone_number').value.trim();
+    const status = document.getElementById('CallStatus').textContent.trim();
+
+    if (!phoneNumber) {
+        alert("No phone number available to dial.");
+        return;
+    }
+
+    if (status === "IDLE") {
+        $.ajax({
+            type: 'POST',
+            url: "ajax/click2call_preview.php",
+            data: { user, phoneNumber, extension, campaign },
+            success: function (response) {
+                //console.log("Dialing initiated:", response);
+            },
+            error: function (xhr, status, error) {
+                console.error("Error initiating call:", error);
+                //alert("Failed to dial the number. Please try again.");
+            }
+        });
+    } else {
+        alert("Please end the current call before dialing another number.");
+    }
+}
+
+//startCountdown();
 
 </script>
