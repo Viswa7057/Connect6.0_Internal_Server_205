@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instagram Automation - Haloocom Client Dashboard</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Custom Style Sheet -->
+  <link rel="stylesheet" href="style.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="logo-container">
+        <div class="logo-icon"><i class="fa-brands fa-instagram"></i></div>
+        <span class="logo-text">Haloocom IG</span>
+      </div>
+
+      <!-- Active Profile Details -->
+      <div class="profile-card">
+        <img id="sidebar-avatar" src="https://picsum.photos/id/111/100/100" alt="Avatar" class="profile-avatar">
+        <div class="profile-info">
+          <div id="sidebar-name" class="profile-name">Instagram Profile</div>
+          <div id="sidebar-handle" class="profile-handle">@no_profile_id</div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <ul class="nav-menu">
+        <li class="nav-item active" data-target="dashboard">
+          <button><i class="fa-solid fa-chart-line"></i> <span>Dashboard</span></button>
+        </li>
+        <li class="nav-item" data-target="messages">
+          <button>
+            <i class="fa-solid fa-paper-plane"></i> 
+            <span>Direct Messages</span>
+            <span id="nav-badge-messages" class="badge hidden">0</span>
+          </button>
+        </li>
+        <li class="nav-item" data-target="comments">
+          <button>
+            <i class="fa-solid fa-comments"></i> 
+            <span>Comments</span>
+            <span id="nav-badge-comments" class="badge hidden">0</span>
+          </button>
+        </li>
+        <li class="nav-item" data-target="notifications">
+          <button>
+            <i class="fa-solid fa-bell"></i> 
+            <span>Notifications</span>
+            <span id="nav-badge-notifications" class="badge hidden">0</span>
+          </button>
+        </li>
+        <li class="nav-item" data-target="publisher">
+          <button><i class="fa-solid fa-circle-plus"></i> <span>Publisher</span></button>
+        </li>
+        <li class="nav-item" data-target="credentials">
+          <button><i class="fa-solid fa-sliders"></i> <span>Credentials</span></button>
+        </li>
+      </ul>
+
+      <!-- Footer Info -->
+      <div class="sidebar-footer">
+        <div class="status-badge">
+          <div id="status-indicator" class="status-dot connected"></div>
+          <span id="status-label">Live Connected</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Top Action Bar -->
+      <header class="top-bar">
+        <h1 id="current-title" class="view-title">Dashboard & Insights</h1>
+        
+        <div class="control-panel">
+          <!-- Connection Status Button -->
+          <button id="btn-top-test" class="secondary-btn" style="padding: 8px 16px; font-size: 13px;">
+            <i class="fa-solid fa-plug"></i> Test Connection
+          </button>
+        </div>
+      </header>
+
+      <!-- VIEW: Dashboard -->
+      <section id="view-dashboard" class="view-panel active">
+        <!-- Stats Summary cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header">
+              <span>Followers</span>
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <div id="dash-followers" class="stat-value">12,480</div>
+            <div class="stat-trend trend-up">
+              <i class="fa-solid fa-arrow-up"></i> +1.4% <span style="color: var(--text-muted); font-weight: normal;">this week</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <span>Reach (30d)</span>
+              <i class="fa-solid fa-eye"></i>
+            </div>
+            <div id="dash-reach" class="stat-value">42,100</div>
+            <div class="stat-trend trend-up">
+              <i class="fa-solid fa-arrow-up"></i> +12.3% <span style="color: var(--text-muted); font-weight: normal;">vs last month</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <span>Engaged Accounts</span>
+              <i class="fa-solid fa-thumbs-up"></i>
+            </div>
+            <div id="dash-engaged" class="stat-value">8,400</div>
+            <div class="stat-trend trend-up">
+              <i class="fa-solid fa-arrow-up"></i> +5.8% <span style="color: var(--text-muted); font-weight: normal;">vs last month</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <span>Website Clicks</span>
+              <i class="fa-solid fa-link"></i>
+            </div>
+            <div id="dash-clicks" class="stat-value">620</div>
+            <div class="stat-trend trend-down">
+              <i class="fa-solid fa-arrow-down"></i> -2.1% <span style="color: var(--text-muted); font-weight: normal;">vs last month</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeseries Chart -->
+        <div class="chart-panel">
+          <div class="chart-header">
+            <h3 class="chart-title">Account Insights Timeseries (Last 7 snapshots)</h3>
+            <span style="font-size: 12px; color: var(--text-muted);">Refreshed every 23 hours</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="insightsChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Post Engagement Performance -->
+        <h3 class="posts-section-title">Recent Post Stats & Metrics</h3>
+        <div id="posts-analytics-container" class="posts-analytics-grid">
+          <!-- Dynamic post analytics cards go here -->
+        </div>
+      </section>
+
+      <!-- VIEW: Direct Messages -->
+      <section id="view-messages" class="view-panel">
+        <div class="dm-layout">
+          
+          <!-- Inbox Chats List -->
+          <div class="chat-sidebar">
+            <div class="chat-search-bar">
+              <div class="input-wrapper">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="chat-search" class="form-input" placeholder="Search chats by username..." style="padding: 10px 10px 10px 38px;">
+              </div>
+            </div>
+            <div id="chat-list-container" class="chat-list">
+              <!-- Active Chats Rendered Dynamically -->
+            </div>
+          </div>
+
+          <!-- Chat Conversation Panel -->
+          <div id="chat-pane-view" class="chat-pane">
+            <div class="chat-pane-header">
+              <div class="chat-header-info">
+                <div id="chat-active-avatar" class="chat-item-avatar">JD</div>
+                <div>
+                  <div id="chat-active-username" class="chat-header-username">Jane Doe</div>
+                  <div id="chat-active-meta" class="chat-header-meta">Scoped ID: 17841400000000001</div>
+                </div>
+              </div>
+              <div>
+                <button id="btn-chat-refresh" class="secondary-btn" style="padding: 6px 12px; font-size: 13px;">
+                  <i class="fa-solid fa-rotate"></i> Refresh
+                </button>
+              </div>
+            </div>
+
+            <!-- Messages List -->
+            <div id="chat-messages-container" class="chat-messages">
+              <!-- Message bubbles rendered dynamically -->
+            </div>
+
+            <!-- Chat Composer -->
+            <div class="chat-input-bar">
+              <button id="btn-chat-attachment" class="attachment-btn" title="Add Media Attachment URL">
+                <i class="fa-solid fa-image"></i>
+              </button>
+              <input type="text" id="chat-text-input" class="chat-text-input" placeholder="Write a response... (24h message window active)">
+              <button id="btn-chat-send" class="primary-btn" style="padding: 10px 20px; border-radius: var(--radius-full);">
+                <i class="fa-solid fa-paper-plane"></i> Send
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- VIEW: Comments -->
+      <section id="view-comments" class="view-panel">
+        <div class="comments-layout">
+          
+          <!-- Comments Sidebar (Posts List) -->
+          <div class="comments-post-sidebar">
+            <div class="post-selector-header">
+              <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">Select Instagram Post</span>
+              <div class="custom-post-loader">
+                <input type="text" id="input-custom-post-id" class="form-input" placeholder="Load Post ID manually..." style="padding: 8px 10px; font-size: 12px;">
+                <button id="btn-custom-post-load" class="secondary-btn" style="padding: 8px 12px; font-size: 12px;"><i class="fa-solid fa-download"></i></button>
+              </div>
+            </div>
+            <div id="comments-posts-list-container" class="comments-post-list">
+              <!-- Posts list goes here -->
+            </div>
+          </div>
+
+          <!-- Comment Stream Container -->
+          <div class="comments-feed-pane">
+            <div id="comments-stream-container" class="comments-list-container">
+              <!-- Comments and nested replies will be loaded here -->
+            </div>
+
+            <!-- Reply Composer drawer overlay -->
+            <div id="reply-composer-drawer" class="reply-composer-overlay">
+              <div class="reply-composer-header">
+                <div>Replying to <span id="reply-target-username" style="font-weight: 600; color: var(--accent-color);">@tech_guru</span></div>
+                <button id="btn-close-reply-drawer" style="background:none; border:none; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <div class="form-group" style="margin-bottom: 12px;">
+                <textarea id="comment-reply-textarea" class="form-input" rows="2" placeholder="Write your reply... (supports max 2,196 characters)" style="padding: 12px; resize: none;"></textarea>
+              </div>
+              <div class="reply-composer-actions">
+                <!-- Submit standard reply -->
+                <button id="btn-submit-public-reply" class="primary-btn" style="padding: 8px 16px; font-size: 13px;">
+                  <i class="fa-solid fa-reply"></i> Submit Public Reply
+                </button>
+                <!-- Submit private reply -->
+                <button id="btn-submit-private-reply" class="secondary-btn" style="padding: 8px 16px; font-size: 13px; border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;">
+                  <i class="fa-solid fa-envelope"></i> Send Private DM Reply
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- VIEW: Publisher -->
+      <section id="view-publisher" class="view-panel">
+        <div class="publisher-layout">
+          
+          <!-- Publisher Form -->
+          <div class="pub-form-card">
+            <form id="publisher-form" onsubmit="event.preventDefault();">
+              
+              <!-- Format Option Buttons -->
+              <div class="form-group">
+                <label>Select Publishing Format</label>
+                <div class="format-cards">
+                  <div class="format-card-option">
+                    <input type="radio" id="fmt-post" name="pub-format" value="post" checked>
+                    <label for="fmt-post" class="format-card-label">
+                      <i class="fa-solid fa-table-cells"></i>
+                      <span style="font-weight: 600; font-size: 13px;">Feed Post</span>
+                    </label>
+                  </div>
+                  <div class="format-card-option">
+                    <input type="radio" id="fmt-reel" name="pub-format" value="reel">
+                    <label for="fmt-reel" class="format-card-label">
+                      <i class="fa-solid fa-clapperboard"></i>
+                      <span style="font-weight: 600; font-size: 13px;">Reel</span>
+                    </label>
+                  </div>
+                  <div class="format-card-option">
+                    <input type="radio" id="fmt-story" name="pub-format" value="story">
+                    <label for="fmt-story" class="format-card-label">
+                      <i class="fa-solid fa-circle-notch"></i>
+                      <span style="font-weight: 600; font-size: 13px;">Story</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Media Attachment Urls -->
+              <div class="form-group">
+                <label id="lbl-pub-media">Media URLs (Required)</label>
+                <input type="text" id="pub-media-url" class="form-input" placeholder="https://example.com/image.jpg (Comma separate up to 10 for carousels)" style="padding-left: 14px;">
+                <span class="help-text">JPG/PNG/MP4. Posts support mixed carousels. Stories/Reels take exactly 1 media.</span>
+              </div>
+
+              <!-- Caption -->
+              <div id="group-pub-caption" class="form-group">
+                <label>Caption Text</label>
+                <textarea id="pub-caption" class="form-input" rows="4" placeholder="Write something inspiring... (Max 2,200 characters)" style="padding: 12px; resize: vertical;"></textarea>
+              </div>
+
+              <!-- FIRST COMMENT -->
+              <div id="group-pub-first-comment" class="form-group conditional-fields" style="display: block;">
+                <label>Add First Comment (Optional)</label>
+                <input type="text" id="pub-first-comment" class="form-input" placeholder="Follow for more content!" style="padding-left: 14px;">
+                <span class="help-text">Auto-published immediately after post publication (Max 2,196 characters).</span>
+              </div>
+
+              <!-- COLLABORATORS -->
+              <div id="group-pub-collaborators" class="form-group conditional-fields" style="display: block;">
+                <label>Collaborators (Optional)</label>
+                <input type="text" id="pub-collaborators" class="form-input" placeholder="partnerhandle, secondhandle" style="padding-left: 14px;">
+                <span class="help-text">Invite users to co-author this post (Comma separated).</span>
+              </div>
+
+              <!-- REEL COVER URL -->
+              <div id="group-pub-cover" class="form-group conditional-fields">
+                <label>Cover Image URL (Optional)</label>
+                <input type="text" id="pub-cover-url" class="form-input" placeholder="https://example.com/cover.jpg" style="padding-left: 14px;">
+              </div>
+
+              <!-- REEL AUDIO NAME -->
+              <div id="group-pub-audio" class="form-group conditional-fields">
+                <label>Audio Track Title (Optional)</label>
+                <input type="text" id="pub-audio-name" class="form-input" placeholder="Trending Beats Volume 1" style="padding-left: 14px;">
+              </div>
+
+              <!-- REEL TRIAL STRATEGY -->
+              <div id="group-pub-trial" class="form-group conditional-fields">
+                <label>Trial Strategy</label>
+                <select id="pub-trial-strategy" class="form-input" style="padding-left: 14px; background-color: var(--bg-secondary);">
+                  <option value="">None (Publish immediately to feed)</option>
+                  <option value="MANUAL">MANUAL (Publish to non-followers only)</option>
+                  <option value="SS_PERFORMANCE">SS_PERFORMANCE (Automated Reels test strategy)</option>
+                </select>
+              </div>
+
+              <!-- Submit Button -->
+              <div style="margin-top: 24px;">
+                <button type="submit" id="btn-pub-submit" class="primary-btn" style="width: 100%;">
+                  <i class="fa-solid fa-upload"></i> Publish to Instagram
+                </button>
+              </div>
+
+            </form>
+          </div>
+
+          <!-- Live Mobile Preview Pane -->
+          <div class="pub-preview-card">
+            <h3 class="chart-title"><i class="fa-solid fa-mobile-screen-button"></i> Live Instagram Preview</h3>
+            
+            <div class="insta-preview-phone">
+              <div class="phone-header"><span id="preview-phone-clock">12:00</span></div>
+              
+              <div id="phone-body-preview" class="phone-body">
+                <!-- Preview Header -->
+                <div class="phone-post-header">
+                  <img src="https://picsum.photos/id/64/100/100" class="phone-post-avatar">
+                  <div>
+                    <div class="phone-post-user">dev_sandbox</div>
+                    <div style="font-size: 9px; color: var(--text-muted);">Sponsored • Dashboard Sandbox</div>
+                  </div>
+                  <i class="fa-solid fa-ellipsis" style="margin-left: auto; font-size: 14px; color: #fff;"></i>
+                </div>
+
+                <!-- Preview Media Container -->
+                <div id="phone-media-container" class="phone-post-media">
+                  <!-- Empty media indicator or image -->
+                  <i class="fa-solid fa-image" style="font-size: 48px; color: var(--bg-tertiary);"></i>
+                </div>
+
+                <!-- Preview Actions -->
+                <div class="phone-post-actions">
+                  <i class="fa-regular fa-heart"></i>
+                  <i class="fa-regular fa-comment"></i>
+                  <i class="fa-regular fa-paper-plane"></i>
+                  <i class="fa-regular fa-bookmark" style="margin-left: auto;"></i>
+                </div>
+
+                <!-- Preview Caption -->
+                <div class="phone-post-caption">
+                  <strong style="color: #fff; margin-right: 4px;">dev_sandbox</strong><span id="phone-caption-text">Your post caption will appear here...</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- VIEW: Credentials -->
+      <section id="view-credentials" class="view-panel">
+        <div class="config-layout">
+          
+          <!-- Credentials Input Form -->
+          <div class="config-card">
+            <h3 class="posts-section-title" style="margin-bottom: 8px;">Haloocom Keys</h3>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 24px;">Configure your access credentials below. Stored safely in your local browser cache.</p>
+
+            <div class="form-group">
+              <label>API Bearer Token</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-key"></i>
+                <input type="password" id="input-api-key" class="form-input" placeholder="Bearer ppx_live_...">
+              </div>
+              <span class="help-text">Retrieve from your Haloocom developers portal.</span>
+            </div>
+
+            <div class="form-group">
+              <label>Instagram Profile ID</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-id-badge"></i>
+                <input type="text" id="input-profile-id" class="form-input" placeholder="prof_abc123">
+              </div>
+              <span class="help-text">Profile ID corresponding to your connected IG Business / Creator account.</span>
+            </div>
+
+            <div style="display: flex; gap: 16px; margin-top: 32px;">
+              <button id="btn-save-credentials" class="primary-btn" style="flex: 1;">
+                <i class="fa-solid fa-floppy-disk"></i> Save Credentials
+              </button>
+              <button id="btn-clear-credentials" class="secondary-btn" style="color: var(--danger-color); border-color: rgba(239, 68, 68, 0.2);">
+                Clear
+              </button>
+            </div>
+          </div>
+
+          <!-- Connection Stats & Integration Tips -->
+          <div class="config-card">
+            <h3 class="posts-section-title" style="margin-bottom: 16px;">Quick References</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 16px; font-size: 14px;">
+              <div style="background: rgba(255,255,255,0.02); border-radius: var(--radius-md); padding: 14px; border: var(--glass-border);">
+                <strong style="color: var(--accent-color);"><i class="fa-solid fa-bolt"></i> API Base Endpoint</strong>
+                <code style="display: block; margin-top: 6px; color: #f8fafc; font-family: monospace; font-size: 12px; background: #000; padding: 6px 10px; border-radius: 4px;">https://api.postproxy.dev</code>
+              </div>
+
+              <div style="background: rgba(255,255,255,0.02); border-radius: var(--radius-md); padding: 14px; border: var(--glass-border);">
+                <strong><i class="fa-solid fa-bell"></i> Webhook Subscription Events</strong>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 6px;">Subscribe your callback URL to receive real-time webhook payloads for direct replies, mentions, and processing status:</p>
+                <ul style="padding-left: 20px; font-size: 11px; margin-top: 8px; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px;">
+                  <li><code>comment.created</code> (For comment replies & moderation)</li>
+                  <li><code>message.received</code> / <code>message.sent</code> (For DMs & Inbox sync)</li>
+                  <li><code>platform_post.published</code> (When publishes complete)</li>
+                </ul>
+              </div>
+
+              <div style="background: rgba(255,255,255,0.02); border-radius: var(--radius-md); padding: 14px; border: var(--glass-border);">
+                <strong><i class="fa-solid fa-clock"></i> 24-Hour Message Window</strong>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 6px;">Free-form DM responses are permitted strictly inside a rolling 24-hour window from the user's last inbound message. Out-of-window replies are blocked by Instagram.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live API Debugger Log -->
+          <div class="config-card" style="grid-column: span 2; margin-top: 12px;">
+            <h3 class="posts-section-title" style="margin-bottom: 8px;"><i class="fa-solid fa-bug"></i> Live API Transaction Debugger</h3>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">Monitor real-time outbound API requests, status codes, and raw JSON payloads below.</p>
+            <div id="api-debugger-logs" style="max-height: 300px; overflow-y: auto; background: rgba(0,0,0,0.4); padding: 16px; border-radius: var(--radius-md); font-family: monospace; font-size: 12px; border: var(--glass-border); line-height: 1.5;">
+              <div style="color: var(--text-muted);">No API transactions recorded yet. Switch to Live mode or trigger a Test Connection.</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- VIEW: Notifications -->
+      <section id="view-notifications" class="view-panel">
+        <div class="config-card" style="width: 100%; max-width: 800px; margin: 0 auto;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 class="posts-section-title" style="margin: 0;"><i class="fa-solid fa-bell"></i> Notifications Log</h3>
+            <button id="btn-clear-notifications" class="secondary-btn" style="padding: 6px 12px; font-size: 13px;">
+              <i class="fa-solid fa-trash-can"></i> Clear All
+            </button>
+          </div>
+          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 24px;">Recent events, comments, DMs, and metrics alerts fetched in real-time.</p>
+          
+          <div id="notifications-list-container" style="display: flex; flex-direction: column; gap: 12px;">
+            <!-- Notifications rendered dynamically -->
+            <div style="text-align: center; padding: 32px; color: var(--text-muted);">
+              <i class="fa-regular fa-bell-slash" style="font-size: 36px; margin-bottom: 12px; display: block; opacity: 0.5;"></i>
+              No new notifications.
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- Toast Notification Drawer -->
+  <div id="toast-root" class="toast-container"></div>
+
+  <!-- Application Controller Entry -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
