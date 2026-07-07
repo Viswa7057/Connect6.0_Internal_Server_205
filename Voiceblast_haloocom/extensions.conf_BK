@@ -1,0 +1,44 @@
+; extensions.conf - Asterisk Dialplan configuration for Voiceblast
+; Copy and paste this context into your Asterisk extensions.conf file,
+; then reload the dialplan (asterisk -rx "dialplan reload").
+
+[voiceblast]
+exten => s,1,NoOp(--- Voiceblast Started for Lead ID: ${LEAD_ID} ---)
+; 1. Mark call as answered in DB
+exten => s,n,AGI(voiceblast_agi.php,answered,${LEAD_ID})
+
+; 2. Define recording parameters
+; Note: Ensure the recordings directory is writable by the 'asterisk' user.
+exten => s,n,Set(RECORDING_DIR=/var/www/html/Voiceblast_haloocom/recordings)
+exten => s,n,Set(RECORDING_FILE=${RECORDING_DIR}/${LIST_ID}_${LEAD_ID}_${STRFTIME(${EPOCH},,%Y%m%d_%H%M%S)}.wav)
+
+; 3. Start Call Recording
+exten => s,n,System(mkdir -p ${RECORDING_DIR})
+exten => s,n,MixMonitor(${RECORDING_FILE},b)
+
+; 4. Play audio and capture DTMF
+; The Read application plays the audio file and waits for DTMF.
+; Syntax: Read(variable_name,filename_without_extension,max_digits,,attempts,timeout_seconds)
+; In this example, it plays the custom audio file and waits for exactly 1 digit.
+; Timeout of 5 seconds will apply after the file finishes playing.
+exten => s,n,Read(DTMF_RESULT,${AUDIO_PATH},1,,1,5)
+
+; 5. Get Answered Duration and stop recording
+exten => s,n,StopMixMonitor()
+
+; 6. Log call completion with duration, DTMF input, and recording file path
+exten => s,n,AGI(voiceblast_agi.php,completed,${LEAD_ID},${ANSWEREDTIME},${DTMF_RESULT},${RECORDING_FILE})
+
+; 7. Clean hangup
+exten => s,n,Hangup()
+
+
+; Special Asterisk extension executed if the call is busy, rejected, or no answer.
+exten => failed,1,NoOp(--- Voiceblast Call Failed for Lead ID: ${LEAD_ID} ---)
+exten => failed,n,Set(FAIL_REASON=${TXTCALLFAILREASON})
+exten => failed,n,GotoIf($[ "${FAIL_REASON}" = "" ]?set_default:log_fail)
+
+exten => failed,n(set_default),Set(FAIL_REASON=NO ANSWER OR REJECTED)
+
+exten => failed,n(log_fail),AGI(voiceblast_agi.php,failed,${LEAD_ID},${FAIL_REASON})
+exten => failed,n,Hangup()
